@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오늘의 운세</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+
+        .date-display {
+            text-align: center;
+            color: #764ba2;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            display: none;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .zodiac-info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .zodiac-icon {
+            font-size: 4em;
+            margin-bottom: 10px;
+        }
+
+        .zodiac-name {
+            font-size: 1.5em;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .zodiac-year {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .fortune-section {
+            margin-top: 20px;
+        }
+
+        .fortune-title {
+            font-size: 1.2em;
+            color: #764ba2;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #764ba2;
+            padding-bottom: 5px;
+        }
+
+        .fortune-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .fortune-item-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .fortune-item-content {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .lucky-numbers {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .lucky-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔮 오늘의 운세</h1>
+        <p class="subtitle">태어난 년도를 입력하고 오늘의 운세를 확인해보세요!</p>
+        <p class="date-display" id="todayDate"></p>
+
+        <div class="input-group">
+            <label for="birthYear">태어난 년도</label>
+            <input type="number" id="birthYear" placeholder="예: 1990" min="1900" max="2025">
+        </div>
+
+        <button onclick="getFortune()">운세 보기</button>
+        <p class="error" id="error"></p>
+
+        <div class="result" id="result">
+            <div class="zodiac-info">
+                <div class="zodiac-icon" id="zodiacIcon"></div>
+                <div class="zodiac-name" id="zodiacName"></div>
+                <div class="zodiac-year" id="zodiacYear"></div>
+            </div>
+
+            <div class="fortune-section">
+                <div class="fortune-title">📋 오늘의 종합운</div>
+                <div class="fortune-item">
+                    <div class="fortune-item-content" id="generalFortune"></div>
+                </div>
+            </div>
+
+            <div class="fortune-section">
+                <div class="fortune-title">💖 애정운</div>
+                <div class="fortune-item">
+                    <div class="fortune-item-content" id="loveFortune"></div>
+                </div>
+            </div>
+
+            <div class="fortune-section">
+                <div class="fortune-title">💰 금전운</div>
+                <div class="fortune-item">
+                    <div class="fortune-item-content" id="moneyFortune"></div>
+                </div>
+            </div>
+
+            <div class="fortune-section">
+                <div class="fortune-title">🍀 행운의 숫자</div>
+                <div class="lucky-numbers" id="luckyNumbers"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 오늘 날짜 표시
+        function displayToday() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = today.getMonth() + 1;
+            const date = today.getDate();
+            const days = ['일', '월', '화', '수', '목', '금', '토'];
+            const day = days[today.getDay()];
+            
+            document.getElementById('todayDate').textContent = 
+                `${year}년 ${month}월 ${date}일 ${day}요일`;
+        }
+
+        // 12지신 정보
+        const zodiacs = [
+            { name: '쥐띠', icon: '🐭', animal: '자(子)' },
+            { name: '소띠', icon: '🐮', animal: '축(丑)' },
+            { name: '호랑이띠', icon: '🐯', animal: '인(寅)' },
+            { name: '토끼띠', icon: '🐰', animal: '묘(卯)' },
+            { name: '용띠', icon: '🐲', animal: '진(辰)' },
+            { name: '뱀띠', icon: '🐍', animal: '사(巳)' },
+            { name: '말띠', icon: '🐴', animal: '오(午)' },
+            { name: '양띠', icon: '🐑', animal: '미(未)' },
+            { name: '원숭이띠', icon: '🐵', animal: '신(申)' },
+            { name: '닭띠', icon: '🐔', animal: '유(酉)' },
+            { name: '개띠', icon: '🐶', animal: '술(戌)' },
+            { name: '돼지띠', icon: '🐷', animal: '해(亥)' }
+        ];
+
+        // 띠별 운세 메시지
+        const fortunes = {
+            general: [
+                '오늘은 새로운 시작을 하기에 좋은 날입니다. 긍정적인 마음가짐으로 하루를 시작하세요.',
+                '작은 행운들이 여러분을 기다리고 있습니다. 주변을 자세히 살펴보세요.',
+                '오늘은 차분하게 계획을 세우고 실행하기 좋은 날입니다.',
+                '주변 사람들과의 소통이 중요한 하루가 될 것입니다.',
+                '자신감을 가지고 도전하세요. 좋은 결과가 있을 것입니다.',
+                '오늘은 휴식과 재충전이 필요한 날입니다. 무리하지 마세요.',
+                '예상치 못한 기회가 찾아올 수 있습니다. 열린 마음으로 받아들이세요.'
+            ],
+            love: [
+                '연인과의 달콤한 시간을 보낼 수 있는 날입니다.',
+                '솔로라면 새로운 만남의 기회가 있을 수 있습니다.',
+                '소중한 사람에게 마음을 표현하기 좋은 날입니다.',
+                '작은 오해가 생길 수 있으니 대화로 풀어가세요.',
+                '상대방의 입장을 이해하려는 노력이 필요합니다.',
+                '로맨틱한 분위기를 만들어보세요. 좋은 추억이 될 것입니다.',
+                '진심을 전하면 상대방도 마음을 열 것입니다.'
+            ],
+            money: [
+                '작은 재테크 기회가 있을 수 있습니다. 신중하게 판단하세요.',
+                '지출을 조절하고 저축하기 좋은 날입니다.',
+                '예상치 못한 수입이 있을 수 있습니다.',
+                '큰 지출은 피하고 계획적으로 사용하세요.',
+                '투자보다는 안정적인 재정 관리가 필요한 시기입니다.',
+                '부수입의 기회를 찾아보세요.',
+                '경제적 안정을 위한 장기 계획을 세워보세요.'
+            ]
+        };
+
+        function getZodiac(year) {
+            const index = (year - 4) % 12;
+            return zodiacs[index];
+        }
+
+        function getRandomFortune(category) {
+            const messages = fortunes[category];
+            return messages[Math.floor(Math.random() * messages.length)];
+        }
+
+        function generateLuckyNumbers() {
+            const numbers = [];
+            while (numbers.length < 3) {
+                const num = Math.floor(Math.random() * 45) + 1;
+                if (!numbers.includes(num)) {
+                    numbers.push(num);
+                }
+            }
+            return numbers.sort((a, b) => a - b);
+        }
+
+        function getFortune() {
+            const birthYear = document.getElementById('birthYear').value;
+            const error = document.getElementById('error');
+            const result = document.getElementById('result');
+
+            // 입력 검증
+            if (!birthYear) {
+                error.textContent = '태어난 년도를 입력해주세요.';
+                error.style.display = 'block';
+                result.style.display = 'none';
+                return;
+            }
+
+            const year = parseInt(birthYear);
+            if (year < 1900 || year > 2025) {
+                error.textContent = '1900년부터 2025년 사이의 년도를 입력해주세요.';
+                error.style.display = 'block';
+                result.style.display = 'none';
+                return;
+            }
+
+            error.style.display = 'none';
+
+            // 띠 계산
+            const zodiac = getZodiac(year);
+
+            // 결과 표시
+            document.getElementById('zodiacIcon').textContent = zodiac.icon;
+            document.getElementById('zodiacName').textContent = zodiac.name;
+            document.getElementById('zodiacYear').textContent = `${year}년생 ${zodiac.animal}`;
+
+            // 운세 표시
+            document.getElementById('generalFortune').textContent = getRandomFortune('general');
+            document.getElementById('loveFortune').textContent = getRandomFortune('love');
+            document.getElementById('moneyFortune').textContent = getRandomFortune('money');
+
+            // 행운의 숫자 표시
+            const luckyNumbers = generateLuckyNumbers();
+            const luckyNumbersHtml = luckyNumbers.map(num => 
+                `<div class="lucky-number">${num}</div>`
+            ).join('');
+            document.getElementById('luckyNumbers').innerHTML = luckyNumbersHtml;
+
+            result.style.display = 'block';
+        }
+
+        // Enter 키로도 운세 보기 가능
+        document.getElementById('birthYear').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                getFortune();
+            }
+        });
+
+        // 페이지 로드시 오늘 날짜 표시
+        displayToday();
+    </script>
+</body>
+</html>
